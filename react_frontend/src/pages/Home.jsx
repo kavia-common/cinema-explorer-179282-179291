@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { fetchMovies, getTrending, getFeatured } from '../lib/tmdbClient';
 import MovieCard from '../components/MovieCard';
+import UserMoviesForm from '../components/UserMoviesForm';
+import UserMoviesList from '../components/UserMoviesList';
 
 /**
  * PUBLIC_INTERFACE
@@ -278,6 +280,14 @@ export default function Home() {
             )}
           </section>
         )}
+      {/* Your Movies */}
+      <section className="mt-12">
+        <h2 className="text-2xl font-semibold text-text mb-4">Your Movies</h2>
+        <div className="grid grid-cols-1 gap-6">
+          <UserMoviesForm />
+          <UserMoviesList />
+        </div>
+      </section>
       </div>
     </section>
   );
