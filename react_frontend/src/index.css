@@ -1,30 +1,39 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Tailwind layers */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Royal Purple palette via CSS variables for optional use */
+:root {
+  --royal-primary: #8B5CF6;
+  --royal-secondary: #6B7280;
+  --royal-success: #10B981;
+  --royal-error: #EF4444;
+  --royal-background: #F3E8FF;
+  --royal-surface: #FFFFFF;
+  --royal-text: #374151;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* Minimal base resets and elegant defaults */
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Soft background by default; components can override using utilities */
+    background-color: var(--royal-background);
+    color: var(--royal-text);
+    font-feature-settings: "liga", "kern";
+  }
 }
 
-/* Tailwind-like placeholder utilities to keep structure compatible
-   without requiring Tailwind setup at this stage.
-   Only minimal classes used by the Home component are defined. */
-
-.tw-min-h-screen { min-height: 100vh; }
-.tw-flex { display: flex; }
-.tw-items-center { align-items: center; }
-.tw-justify-center { justify-content: center; }
-
-/* Basic palette approximations */
-.tw-bg-gray-50 { background-color: #f9fafb; }
-.tw-text-gray-800 { color: #1f2937; }
-
-/* Typography */
-.tw-font-semibold { font-weight: 600; }
-.tw-text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+/* Example component shortcuts (optional) */
+@layer components {
+  .card-elegant {
+    @apply bg-surface/90 backdrop-blur rounded-2xl shadow-lg p-8;
+  }
+}

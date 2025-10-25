@@ -1,41 +1,29 @@
 import React from 'react';
-import './App.css';
 import Home from './pages/Home';
 
 /**
  * PUBLIC_INTERFACE
  * Root application component.
  * - Displays a simple navbar with the app title "MovieAI".
+ * - Uses Tailwind utility classes and the Royal Purple theme.
  * - Renders the Home page as the root route for the minimal app.
  */
 function App() {
   return (
-    <div className="App">
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 to-purple-300">
       <nav
         aria-label="Main Navigation"
-        style={{
-          height: '56px',
-          display: 'flex',
-          alignItems: 'center',
-          padding: '0 16px',
-          borderBottom: '1px solid rgba(0,0,0,0.08)',
-          background: '#ffffff',
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-        }}
+        className="sticky top-0 z-10 bg-surface/80 backdrop-blur border-b border-white/30"
       >
-        <div
-          style={{
-            fontWeight: 700,
-            letterSpacing: '0.3px',
-            color: '#1f2937',
-          }}
-        >
-          MovieAI
+        <div className="mx-auto max-w-5xl px-4 h-14 flex items-center">
+          <div className="text-2xl font-bold text-primary tracking-wide">
+            MovieAI
+          </div>
         </div>
       </nav>
-      <Home />
+      <main>
+        <Home />
+      </main>
     </div>
   );
 }
