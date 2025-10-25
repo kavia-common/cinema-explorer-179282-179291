@@ -11,3 +11,20 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Tailwind-like placeholder utilities to keep structure compatible
+   without requiring Tailwind setup at this stage.
+   Only minimal classes used by the Home component are defined. */
+
+.tw-min-h-screen { min-height: 100vh; }
+.tw-flex { display: flex; }
+.tw-items-center { align-items: center; }
+.tw-justify-center { justify-content: center; }
+
+/* Basic palette approximations */
+.tw-bg-gray-50 { background-color: #f9fafb; }
+.tw-text-gray-800 { color: #1f2937; }
+
+/* Typography */
+.tw-font-semibold { font-weight: 600; }
+.tw-text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
