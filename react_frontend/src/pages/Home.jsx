@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { fetchMovies, getTrending, getFeatured } from '../lib/tmdbClient';
 import MovieCard from '../components/MovieCard';
 import UserMoviesForm from '../components/UserMoviesForm';
@@ -120,6 +120,8 @@ export default function Home() {
       isActive = false;
     };
   }, [hasTmdbKey]);
+
+  const listRef = useRef(null);
 
   return (
     <section className="min-h-[calc(100vh-56px)] px-4 py-10">
@@ -284,8 +286,8 @@ export default function Home() {
       <section className="mt-12">
         <h2 className="text-2xl font-semibold text-text mb-4">Your Movies</h2>
         <div className="grid grid-cols-1 gap-6">
-          <UserMoviesForm />
-          <UserMoviesList />
+          <UserMoviesForm onAdded={() => listRef.current?.refetch?.()} />
+          <UserMoviesList ref={listRef} />
         </div>
       </section>
       </div>

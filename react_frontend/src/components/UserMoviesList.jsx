@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+} from 'react';
 import { supabase } from '../lib/supabaseClient';
 
 /**
@@ -8,8 +14,9 @@ import { supabase } from '../lib/supabaseClient';
  * - Renders a responsive grid with image, title, year, and description
  * - Includes loading, error, and empty states
  * - Gracefully handles missing Supabase env vars by showing a prompt to configure
+ * - Exposes an imperative `refetch()` method via a ref to allow parent-triggered reloads
  */
-export default function UserMoviesList() {
+const UserMoviesList = forwardRef(function UserMoviesList(_props, ref) {
   const hasSupabaseConfig = useMemo(
     () =>
       Boolean(process.env.REACT_APP_SUPABASE_URL) &&
@@ -47,6 +54,15 @@ export default function UserMoviesList() {
       setLoading(false);
     }
   }
+
+  // Expose an imperative refetch method to parent
+  useImperativeHandle(ref, () => ({
+    // PUBLIC_INTERFACE
+    refetch: () => {
+      /** Triggers a manual refetch of the movies list. */
+      return fetchMovies();
+    },
+  }));
 
   useEffect(() => {
     if (!hasSupabaseConfig) return;
@@ -157,4 +173,6 @@ export default function UserMoviesList() {
       )}
     </section>
   );
-}
+});
+
+export default UserMoviesList;

@@ -10,7 +10,7 @@ import { supabase } from '../lib/supabaseClient';
  * - Shows success/error messages and resets after success
  * - Gracefully handles missing Supabase env vars by showing an inline message
  */
-export default function UserMoviesForm() {
+export default function UserMoviesForm({ onAdded }) {
   const hasSupabaseConfig = useMemo(
     () =>
       Boolean(process.env.REACT_APP_SUPABASE_URL) &&
@@ -95,6 +95,13 @@ export default function UserMoviesForm() {
       // Broadcast a custom event so the list can refresh automatically
       try {
         document.dispatchEvent(new CustomEvent('user-movies:changed'));
+      } catch {
+        // ignore
+      }
+
+      // Also notify parent via callback if provided
+      try {
+        if (typeof onAdded === 'function') onAdded();
       } catch {
         // ignore
       }
