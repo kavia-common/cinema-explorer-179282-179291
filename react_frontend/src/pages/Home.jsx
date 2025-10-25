@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { searchMovies } from '../lib/tmdbClient';
+import { fetchMovies, getTrending, getFeatured } from '../lib/tmdbClient';
 import MovieCard from '../components/MovieCard';
 
 /**
@@ -8,6 +8,7 @@ import MovieCard from '../components/MovieCard';
  * - Provides a debounced search bar for querying TMDB movies.
  * - Renders a responsive grid of results using MovieCard.
  * - Includes loading, error, and empty states.
+ * - On mount, fetches Trending (day) and Featured (popular) and renders sections below results.
  * - Gracefully handles missing TMDB API key by disabling search and showing an inline message.
  */
 export default function Home() {
@@ -21,6 +22,16 @@ export default function Home() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  // Trending state
+  const [trending, setTrending] = useState([]);
+  const [trendingLoading, setTrendingLoading] = useState(false);
+  const [trendingError, setTrendingError] = useState('');
+
+  // Featured state
+  const [featured, setFeatured] = useState([]);
+  const [featuredLoading, setFeaturedLoading] = useState(false);
+  const [featuredError, setFeaturedError] = useState('');
 
   // Debounce the query input by 400ms
   useEffect(() => {
@@ -46,7 +57,7 @@ export default function Home() {
 
       setLoading(true);
       try {
-        const data = await searchMovies(debouncedQuery);
+        const data = await fetchMovies({ query: debouncedQuery });
         if (!isActive) return;
         setResults(Array.isArray(data?.results) ? data.results : []);
       } catch (err) {
@@ -65,6 +76,48 @@ export default function Home() {
       isActive = false;
     };
   }, [debouncedQuery, hasTmdbKey]);
+
+  // On mount: fetch trending (day) and featured (popular)
+  useEffect(() => {
+    if (!hasTmdbKey) return;
+    let isActive = true;
+
+    async function fetchTrendingAndFeatured() {
+      setTrendingLoading(true);
+      setFeaturedLoading(true);
+      setTrendingError('');
+      setFeaturedError('');
+
+      try {
+        const [t, f] = await Promise.all([
+          getTrending('day'),
+          getFeatured(),
+        ]);
+        if (!isActive) return;
+        setTrending(Array.isArray(t?.results) ? t.results : []);
+        setFeatured(Array.isArray(f?.results) ? f.results : []);
+      } catch (err) {
+        if (!isActive) return;
+        const msg =
+          (err && err.message) ||
+          'Unable to fetch movies from TMDB at the moment.';
+        // If either fails, set respective error; partial success is allowed
+        setTrendingError(msg);
+        setFeaturedError(msg);
+        setTrending([]);
+        setFeatured([]);
+      } finally {
+        if (!isActive) return;
+        setTrendingLoading(false);
+        setFeaturedLoading(false);
+      }
+    }
+
+    fetchTrendingAndFeatured();
+    return () => {
+      isActive = false;
+    };
+  }, [hasTmdbKey]);
 
   return (
     <section className="min-h-[calc(100vh-56px)] px-4 py-10">
@@ -165,6 +218,66 @@ export default function Home() {
             </div>
           )}
         </div>
+
+        {/* Trending Today */}
+        {hasTmdbKey && (
+          <section className="mt-12">
+            <h2 className="text-2xl font-semibold text-text mb-4">Trending Today</h2>
+            {trendingLoading && (
+              <div className="flex items-center gap-3 text-secondary">
+                <span className="inline-flex h-5 w-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                <span>Loading trending movies…</span>
+              </div>
+            )}
+            {trendingError && !trendingLoading && (
+              <div
+                className="text-sm rounded-lg border border-error/30 bg-red-50/70 text-error px-3 py-2"
+                role="alert"
+              >
+                {trendingError}
+              </div>
+            )}
+            {!trendingLoading && !trendingError && (
+              <div
+                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+              >
+                {trending.map((m) => (
+                  <MovieCard key={m.id ?? `${m.title}-${m.release_date}-tr`} movie={m} />
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* Featured */}
+        {hasTmdbKey && (
+          <section className="mt-12">
+            <h2 className="text-2xl font-semibold text-text mb-4">Featured</h2>
+            {featuredLoading && (
+              <div className="flex items-center gap-3 text-secondary">
+                <span className="inline-flex h-5 w-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                <span>Loading featured movies…</span>
+              </div>
+            )}
+            {featuredError && !featuredLoading && (
+              <div
+                className="text-sm rounded-lg border border-error/30 bg-red-50/70 text-error px-3 py-2"
+                role="alert"
+              >
+                {featuredError}
+              </div>
+            )}
+            {!featuredLoading && !featuredError && (
+              <div
+                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+              >
+                {featured.map((m) => (
+                  <MovieCard key={m.id ?? `${m.title}-${m.release_date}-ft`} movie={m} />
+                ))}
+              </div>
+            )}
+          </section>
+        )}
       </div>
     </section>
   );
