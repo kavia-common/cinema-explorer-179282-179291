@@ -15,7 +15,7 @@ import HeroSection from '../components/HeroSection';
  *   // In App component:
  *   <Routes>
  *     <Route path="/" element={<Landing />} />
- *     {/* other routes */}
+ *     // other routes...
  *   </Routes>
  *   // --- END: Optional Router Integration ---
  */
